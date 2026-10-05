@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+env:
+  PYTHONFORANDROID_PREREQUISITES_INSTALL_INTERACTIVE: 0
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,11 +28,6 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Preparar Android SDK
-        uses: android-actions/setup-android@v4
-        with:
-          packages: "platform-tools platforms;android-35 build-tools;35.0.0"
-
       - name: Dependências Linux
         run: |
           sudo apt update
@@ -40,11 +38,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install buildozer cython
 
-      - name: Preparar Python-for-Android
+      - name: Preparar Android e Python-for-Android
         run: |
-          sed -i.bak "s/# android.accept_sdk_license = False/android.accept_sdk_license = True/" buildozer.spec
-          echo "p4a.branch = develop" >> buildozer.spec
           buildozer android p4a -- --help
+
+      - name: Aceitar licenças Android
+        run: |
+          SDKMANAGER="$HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager"
+          if [ -f "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --licenses || true
+          fi
 
       - name: Compilar APK
         run: |
