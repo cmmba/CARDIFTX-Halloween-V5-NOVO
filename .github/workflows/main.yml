@@ -25,6 +25,11 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Preparar Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0"
+
       - name: Dependências Linux
         run: |
           sudo apt update
@@ -43,6 +48,7 @@ jobs:
 
       - name: Compilar APK
         run: |
+          buildozer android clean
           buildozer android debug
 
       - name: Guardar APK
