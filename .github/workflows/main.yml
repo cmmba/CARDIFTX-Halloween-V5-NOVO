@@ -27,17 +27,22 @@ jobs:
 
       - name: Dependências Linux
         run: |
-          sudo apt-get update
-          sudo apt-get install -y automake libltdl-dev
+          sudo apt update
+          sudo apt install -y automake libltdl-dev
 
       - name: Instalar Buildozer
         run: |
           python -m pip install --upgrade pip
           pip install buildozer cython
 
+      - name: Preparar Python-for-Android
+        run: |
+          sed -i.bak "s/# android.accept_sdk_license = False/android.accept_sdk_license = True/" buildozer.spec
+          echo "p4a.branch = develop" >> buildozer.spec
+          buildozer android p4a -- --help
+
       - name: Compilar APK
         run: |
-          buildozer android clean
           buildozer android debug
 
       - name: Guardar APK
