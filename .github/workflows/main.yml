@@ -35,12 +35,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install buildozer cython
 
-      - name: Preparar Android
-        run: |
-          buildozer android p4a -- --help
-
       - name: Compilar APK
         run: |
+          buildozer android clean
           buildozer android debug
 
       - name: Guardar APK
